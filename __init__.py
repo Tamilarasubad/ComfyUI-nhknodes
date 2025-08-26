@@ -33,6 +33,7 @@ def load_node_file(filename):
 
 # Load all node files
 load_node_file("flux_latent_size_picker.py")
+load_node_file("qwen_vision.py")
 
 print(f"NHK Nodes: Loaded {len(NODE_CLASS_MAPPINGS)} nodes: {list(NODE_CLASS_MAPPINGS.keys())}")
 
