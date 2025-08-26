@@ -1,0 +1,42 @@
+import os
+import importlib.util
+
+# Initialize node mappings
+NODE_CLASS_MAPPINGS = {}
+NODE_DISPLAY_NAME_MAPPINGS = {}
+
+# Get current directory
+current_dir = os.path.dirname(os.path.realpath(__file__))
+
+def load_node_file(filename):
+    """Load a node file and extract its mappings"""
+    file_path = os.path.join(current_dir, filename)
+    if not os.path.exists(file_path):
+        return
+    
+    try:
+        # Load the module
+        spec = importlib.util.spec_from_file_location(filename[:-3], file_path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        
+        # Extract mappings
+        if hasattr(module, "NODE_CLASS_MAPPINGS"):
+            NODE_CLASS_MAPPINGS.update(module.NODE_CLASS_MAPPINGS)
+        if hasattr(module, "NODE_DISPLAY_NAME_MAPPINGS"):
+            NODE_DISPLAY_NAME_MAPPINGS.update(module.NODE_DISPLAY_NAME_MAPPINGS)
+            
+        print(f"Successfully loaded {filename}: {list(module.NODE_CLASS_MAPPINGS.keys()) if hasattr(module, 'NODE_CLASS_MAPPINGS') else 'No nodes'}")
+        
+    except Exception as e:
+        print(f"Error loading {filename}: {e}")
+
+# Load all node files
+load_node_file("flux_latent_size_picker.py")
+
+print(f"NHK Nodes: Loaded {len(NODE_CLASS_MAPPINGS)} nodes: {list(NODE_CLASS_MAPPINGS.keys())}")
+
+# Declare web directory for frontend JavaScript files if needed
+# WEB_DIRECTORY = "./web"
+
+__all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']
