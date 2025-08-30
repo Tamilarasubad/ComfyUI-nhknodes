@@ -3,10 +3,10 @@ import comfy.model_management
 
 MAX_RESOLUTION=16384
 
-class FluxEmptyLatentSizePicker:
+class SizePicker:
     """
-    Empty latent size picker optimized for Flux with common aspect ratios
-    Based on NHK aspect ratio calculations with multiples of 64
+    Size picker with model-optimized presets for Flux, Qwen, and SDXL
+    All dimensions are multiples of 32 for optimal quality
     """
     
     def __init__(self):
@@ -17,36 +17,77 @@ class FluxEmptyLatentSizePicker:
         return {
             "required": {
                 "resolution": ([
-                    # 2.0 MP - High Quality
-                    "1408x1408 (1:1, 2.0MP)",
-                    "1536x1280 (6:5, 2.0MP)", 
-                    "1600x1280 (5:4, 2.0MP)",
-                    "1600x1216 (4:3, 2.0MP)",
-                    "1728x1152 (3:2, 2.0MP)",
-                    "1920x1088 (16:9, 2.0MP)",
-                    "2176x960 (21:9, 2.0MP)",
-                    "1984x1024 (2:1, 2.0MP)",
+                    # 1:1 Square
+                    "1024x1024 (1:1 Flux)",
+                    "1328x1328 (1:1 Qwen)",
+                    "1408x1408 (1:1 Flux Ultra)",
+                    "1440x1440 (1:1 Flux Ultra)",
+                    "1920x1920 (1:1 Ultra High-End)",
                     
-                    # 1.0 MP - Standard
-                    "1024x1024 (1:1, 1.0MP)",
-                    "1088x896 (6:5, 1.0MP)",
-                    "1088x896 (5:4, 1.0MP)", 
-                    "1152x896 (4:3, 1.0MP)",
-                    "1216x832 (3:2, 1.0MP)",
-                    "1344x768 (16:9, 1.0MP)",
-                    "1536x640 (21:9, 1.0MP)",
-                    "1408x704 (2:1, 1.0MP)",
+                    # 16:9 Landscape (YouTube standard)
+                    "1536x864 (16:9 Flux)",
+                    "1664x928 (16:9 Qwen)", 
+                    "1792x1008 (16:9 Flux)",
+                    "1920x1088 (16:9 Ultra)",
+                    "2560x1440 (16:9 Ultra)",
                     
-                    # 0.1 MP - Fast Testing
-                    "320x320 (1:1, 0.1MP)",
-                    "320x256 (6:5, 0.1MP)",
-                    "320x256 (5:4, 0.1MP)",
-                    "384x256 (4:3, 0.1MP)", 
-                    "384x256 (3:2, 0.1MP)",
-                    "448x256 (16:9, 0.1MP)",
-                    "512x192 (21:9, 0.1MP)",
-                    "448x256 (2:1, 0.1MP)",
-                ], {"default": "1024x1024 (1:1, 1.0MP)"}),
+                    # 9:16 Portrait (TikTok/Reels)
+                    "864x1536 (9:16 Flux)",
+                    "928x1664 (9:16 Qwen)",
+                    "1008x1792 (9:16 Flux)", 
+                    "1088x1920 (9:16 Ultra)",
+                    "1440x2560 (9:16 Ultra)",
+                    
+                    # 4:5 Portrait (Instagram feed)
+                    "1024x1280 (4:5 Flux)",
+                    "1152x1440 (4:5 Flux)",
+                    "896x1120 (4:5 Flux)",
+                    
+                    # 3:4 Portrait (Instagram supported)
+                    "960x1280 (3:4 Flux)",
+                    "1104x1472 (3:4 Qwen)",
+                    "1056x1408 (3:4 Flux)",
+                    "1200x1600 (3:4 Ultra)",
+                    
+                    # 4:3 Landscape
+                    "1152x864 (4:3 Flux)",
+                    "1472x1140 (4:3 Qwen)",
+                    "1280x960 (4:3 Flux)",
+                    "1408x1056 (4:3 Flux)",
+                    
+                    # 3:2 Landscape  
+                    "1536x1024 (3:2 Flux)",
+                    "1584x1056 (3:2 Qwen)",
+                    "1344x896 (3:2 Flux)",
+                    "1216x800 (3:2 Flux)",
+                    
+                    # 2:3 Portrait
+                    "1024x1536 (2:3 Flux)",
+                    "1056x1584 (2:3 Qwen)",
+                    "896x1344 (2:3 Flux)",
+                    "800x1216 (2:3 Flux)",
+                    
+                    # 21:9 Ultrawide
+                    "1344x576 (21:9 Flux)",
+                    "2016x864 (21:9 Flux)",
+                    "2688x1152 (21:9 Ultra)",
+                    
+                    # 1.91:1 Social/Link cards
+                    "1216x640 (1.91:1 Flux)",
+                    "1472x768 (1.91:1 Flux)",
+                    "1856x972 (1.91:1 Ultra)",
+                    
+                    # 2.39:1 Cinemascope
+                    "1920x800 (2.39:1 Cinema)",
+                    "2112x896 (2.39:1 Cinema)",
+                    
+                    # SDXL Legacy
+                    "1024x1024 (SDXL Base)",
+                    "832x1216 (SDXL Portrait)",
+                    "1216x832 (SDXL Landscape)",
+                    "1344x768 (SDXL 16:9)",
+                    "1536x640 (SDXL Wide)",
+                ], {"default": "1024x1024 (1:1 Flux)"}),
                 
                 "batch_size": ("INT", {"default": 1, "min": 1, "max": 64}),
                 
@@ -98,9 +139,9 @@ class FluxEmptyLatentSizePicker:
 
 # Node registration
 NODE_CLASS_MAPPINGS = {
-    "FluxEmptyLatentSizePicker": FluxEmptyLatentSizePicker
+    "SizePicker": SizePicker
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "FluxEmptyLatentSizePicker": "🎯 Flux Empty Latent Size Picker"
+    "SizePicker": "📐 Size Picker"
 }

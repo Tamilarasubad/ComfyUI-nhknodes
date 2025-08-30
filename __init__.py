@@ -36,10 +36,11 @@ load_node_file("flux_latent_size_picker.py")
 load_node_file("qwen_vision.py")
 load_node_file("cycling_switch.py")
 load_node_file("execution_counter.py")
+load_node_file("image_grid_composite.py")
 
 print(f"NHK Nodes: Loaded {len(NODE_CLASS_MAPPINGS)} nodes: {list(NODE_CLASS_MAPPINGS.keys())}")
 
-# Declare web directory for frontend JavaScript files if needed
-# WEB_DIRECTORY = "./web"
+# Declare web directory for frontend JavaScript files
+WEB_DIRECTORY = "./web"
 
-__all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']
+__all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS', 'WEB_DIRECTORY']
