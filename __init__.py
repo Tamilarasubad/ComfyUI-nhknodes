@@ -37,6 +37,8 @@ load_node_file("qwen_vision.py")
 load_node_file("cycling_switch.py")
 load_node_file("execution_counter.py")
 load_node_file("image_grid_composite.py")
+load_node_file("image_grid_batch.py")
+load_node_file("double_switch.py")
 
 print(f"NHK Nodes: Loaded {len(NODE_CLASS_MAPPINGS)} nodes: {list(NODE_CLASS_MAPPINGS.keys())}")
 

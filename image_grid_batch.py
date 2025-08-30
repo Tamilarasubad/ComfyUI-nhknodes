@@ -1,10 +1,11 @@
 import torch
 import math
 
-class ImageGridComposite:
+class ImageGridBatch:
     """
-    Creates a grid composite from up to 6 input images.
-    Images are arranged left-to-right, top-to-bottom with configurable spacing.
+    Creates a batch of uniformly sized images from up to 6 inputs.
+    All images are scaled to the same dimensions based on grid cell calculations.
+    Output displays as separate images in batch rather than a composite.
     """
     
     @classmethod
@@ -16,25 +17,25 @@ class ImageGridComposite:
                     "min": 64,
                     "max": 8192,
                     "step": 64,
-                    "tooltip": "Total width of output composite (height calculated automatically)"
+                    "tooltip": "Total width used for cell calculations"
                 }),
                 "images_per_row": ("INT", {
                     "default": 2,
                     "min": 1,
                     "max": 6,
                     "step": 1,
-                    "tooltip": "Number of images per row in the grid"
+                    "tooltip": "Number of images per row (affects individual image sizing)"
                 }),
                 "spacing": ("INT", {
                     "default": 10,
                     "min": 0,
                     "max": 100,
                     "step": 1,
-                    "tooltip": "Spacing between images in pixels"
+                    "tooltip": "Spacing used in cell calculations (affects individual image sizing)"
                 }),
                 "background_color": (["black", "white", "gray", "red", "green", "blue"], {
                     "default": "black",
-                    "tooltip": "Background color for spacing and empty cells"
+                    "tooltip": "Background color for padding if needed"
                 }),
             },
             "optional": {
@@ -47,13 +48,13 @@ class ImageGridComposite:
             }
         }
     
-    RETURN_TYPES = ("IMAGE", "INT", "INT")
-    RETURN_NAMES = ("composite", "width", "height")
-    FUNCTION = "create_composite"
+    RETURN_TYPES = ("IMAGE", "INT", "INT", "INT")
+    RETURN_NAMES = ("batch", "cell_width", "cell_height", "batch_count")
+    FUNCTION = "create_batch"
     CATEGORY = "nhk"
     
-    def create_composite(self, width, images_per_row, spacing, background_color, 
-                        image1=None, image2=None, image3=None, image4=None, image5=None, image6=None):
+    def create_batch(self, width, images_per_row, spacing, background_color, 
+                    image1=None, image2=None, image3=None, image4=None, image5=None, image6=None):
         
         # Collect non-None images
         images = []
@@ -63,11 +64,12 @@ class ImageGridComposite:
         
         if not images:
             # Return a blank image if no inputs
-            height = 512
-            blank = torch.zeros((1, height, width, 3), dtype=torch.float32)
-            return (blank, width, height)
+            cell_height = 512
+            cell_width = width // max(1, images_per_row)
+            blank = torch.zeros((1, cell_height, cell_width, 3), dtype=torch.float32)
+            return (blank, cell_width, cell_height, 1)
         
-        # Get color values
+        # Get color values for padding
         color_map = {
             "black": (0.0, 0.0, 0.0),
             "white": (1.0, 1.0, 1.0),
@@ -78,16 +80,11 @@ class ImageGridComposite:
         }
         bg_color = color_map[background_color]
         
-        # Calculate grid dimensions
-        num_images = len(images)
-        num_rows = math.ceil(num_images / images_per_row)
-        
-        # Calculate cell dimensions
+        # Calculate cell dimensions (same logic as composite)
         total_spacing_width = (images_per_row - 1) * spacing
         cell_width = (width - total_spacing_width) // images_per_row
         
         # Calculate what each image should be scaled to fit in its cell
-        # First, determine the maximum dimensions needed for any cell
         max_scaled_height = 0
         for img in images:
             img_height, img_width = img.shape[1], img.shape[2]
@@ -120,38 +117,12 @@ class ImageGridComposite:
         
         cell_height = final_cell_height
         
-        # Calculate total composite height
-        total_spacing_height = (num_rows - 1) * spacing
-        composite_height = num_rows * cell_height + total_spacing_height
-        
-        # Get batch size from first image
-        batch_size = images[0].shape[0]
+        # Process each image to uniform cell size
+        batch_images = []
         channels = images[0].shape[3]
+        device = images[0].device
         
-        # Create composite tensor filled with background color
-        composite = torch.full(
-            (batch_size, composite_height, width, channels),
-            0.0,
-            dtype=torch.float32,
-            device=images[0].device
-        )
-        
-        # Fill with background color
-        for c in range(channels):
-            if c < len(bg_color):
-                composite[:, :, :, c] = bg_color[c]
-            else:
-                composite[:, :, :, c] = bg_color[0]  # Use first color component for extra channels
-        
-        # Place images in grid
-        for i, image in enumerate(images):
-            row = i // images_per_row
-            col = i % images_per_row
-            
-            # Calculate position
-            y_start = row * (cell_height + spacing)
-            x_start = col * (cell_width + spacing)
-            
+        for image in images:
             # Get original image dimensions
             img_height, img_width = image.shape[1], image.shape[2]
             
@@ -176,24 +147,40 @@ class ImageGridComposite:
                 scaled_height = img_height
                 scaled_width = img_width
             
+            # Create cell-sized canvas with background color
+            cell_canvas = torch.full(
+                (image.shape[0], cell_height, cell_width, channels),
+                0.0,
+                dtype=torch.float32,
+                device=device
+            )
+            
+            # Fill with background color
+            for c in range(channels):
+                if c < len(bg_color):
+                    cell_canvas[:, :, :, c] = bg_color[c]
+                else:
+                    cell_canvas[:, :, :, c] = bg_color[0]
+            
             # Calculate centering within cell
             y_offset = (cell_height - scaled_height) // 2
             x_offset = (cell_width - scaled_width) // 2
             
-            # Calculate actual placement coordinates
-            y_pos = y_start + y_offset
-            x_pos = x_start + x_offset
+            # Place the scaled image in the center
+            cell_canvas[:, y_offset:y_offset + scaled_height, x_offset:x_offset + scaled_width, :] = scaled_image
             
-            # Place the scaled image
-            composite[:, y_pos:y_pos + scaled_height, x_pos:x_pos + scaled_width, :] = scaled_image
+            batch_images.append(cell_canvas)
         
-        return (composite, width, composite_height)
+        # Concatenate all images into a single batch
+        batch_tensor = torch.cat(batch_images, dim=0)
+        
+        return (batch_tensor, cell_width, cell_height, len(images))
 
 # Node registration
 NODE_CLASS_MAPPINGS = {
-    "ImageGridComposite": ImageGridComposite
+    "ImageGridBatch": ImageGridBatch
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "ImageGridComposite": "🎯 Image Grid Composite"
+    "ImageGridBatch": "📦 Image Grid Batch"
 }

@@ -1,0 +1,59 @@
+class AnyType(str):
+    """Wildcard type that matches any input"""
+    def __ne__(self, __value: object) -> bool:
+        return False
+
+anyType = AnyType("*")
+
+class DoubleSwitch:
+    """
+    Universal double switch with two sets of inputs (A1, A2 and B1, B2).
+    Selector chooses between outputting the A pair or B pair.
+    Works with any data type using lazy evaluation for efficiency.
+    """
+    
+    def __init__(self):
+        pass
+    
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "selector": ("BOOLEAN", {
+                    "default": True,
+                    "tooltip": "True = output A inputs, False = output B inputs"
+                }),
+                "A1": (anyType, {"lazy": True}),
+                "A2": (anyType, {"lazy": True}),
+                "B1": (anyType, {"lazy": True}),
+                "B2": (anyType, {"lazy": True}),
+            }
+        }
+    
+    RETURN_TYPES = (anyType, anyType)
+    RETURN_NAMES = ("output1", "output2")
+    FUNCTION = "execute"
+    CATEGORY = "nhk"
+    
+    def check_lazy_status(self, selector=True, A1=None, A2=None, B1=None, B2=None):
+        """Only evaluate the inputs that will be used based on selector"""
+        if selector:
+            return ["A1", "A2"]
+        else:
+            return ["B1", "B2"]
+    
+    def execute(self, selector, A1, A2, B1, B2):
+        """Return either A pair or B pair based on selector"""
+        if selector:
+            return (A1, A2)
+        else:
+            return (B1, B2)
+
+# Node registration
+NODE_CLASS_MAPPINGS = {
+    "DoubleSwitch": DoubleSwitch,
+}
+
+NODE_DISPLAY_NAME_MAPPINGS = {
+    "DoubleSwitch": "🔀 Double Switch",
+}
