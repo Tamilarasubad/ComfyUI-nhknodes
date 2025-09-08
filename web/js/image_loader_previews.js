@@ -308,12 +308,31 @@ app.registerExtension({
 
         // Add container to node
         const widget = node.addDOMWidget("image_selector", "div", container);
-        widget.computeSize = (width, height) => {
-            return [width || 600, height || 400];
+        widget.computeSize = () => {
+            return [200, 50];
         };
 
-        // Use percentage-based sizing to fill available space
+        // Monitor node size changes and reveal grid when scaled vertically
+        const updateContainerHeight = () => {
+            if (node.size && node.size[1] > 120) {
+                const availableHeight = node.size[1] - 130;
+                container.style.height = availableHeight + "px";
+                // Show grid when node is scaled tall enough
+                if (availableHeight > 100) {
+                    imageGrid.style.display = "grid";
+                } else {
+                    imageGrid.style.display = "none";
+                }
+            } else {
+                container.style.height = "50px";
+                imageGrid.style.display = "none";
+            }
+        };
+
         container.style.width = "100%";
-        container.style.height = "100%";
+        updateContainerHeight();
+
+        // Monitor for size changes
+        const sizeObserver = setInterval(updateContainerHeight, 100);
     }
 });

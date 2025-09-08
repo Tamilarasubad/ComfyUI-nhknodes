@@ -62,10 +62,23 @@ async def get_nhk_files(request):
 class ImageLoaderWithPreviews:
     @classmethod
     def INPUT_TYPES(s):
+        # Get default directory images for initial dropdown
+        output_dir = folder_paths.get_output_directory()
+        try:
+            files = []
+            if os.path.exists(output_dir):
+                image_extensions = [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp", ".tiff"]
+                for file in os.listdir(output_dir):
+                    if any(file.lower().endswith(ext) for ext in image_extensions):
+                        files.append(file)
+            files = sorted(files) if files else [""]
+        except:
+            files = [""]
+            
         return {
             "required": {
-                "folder_path": ("STRING", {"default": folder_paths.get_output_directory(), "multiline": False}),
-                "image": ("STRING", {"default": ""}),
+                "folder_path": ("STRING", {"default": output_dir, "multiline": False}),
+                "image": (files, {}),
             }
         }
 
