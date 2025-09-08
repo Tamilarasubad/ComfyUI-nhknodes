@@ -67,6 +67,13 @@ class SizePicker:
                     "896x1344 (2:3 Flux)",
                     "800x1216 (2:3 Flux)",
                     
+                    # 2:1 Landscape
+                    "1024x512 (2:1 Flux)",
+                    "1152x576 (2:1 Flux)",
+                    "1280x640 (2:1 Flux)",
+                    "1408x704 (2:1 Qwen)",
+                    "1600x800 (2:1 Ultra)",
+                    
                     # 21:9 Ultrawide
                     "1344x576 (21:9 Flux)",
                     "2016x864 (21:9 Flux)",
