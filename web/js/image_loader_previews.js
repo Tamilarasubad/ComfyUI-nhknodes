@@ -146,7 +146,7 @@ app.registerExtension({
         }
         console.log("🖼️ Processing ImageLoaderWithPreviews node!");
 
-        let isGridExpanded = false;
+        let isGridExpanded = true;
         let selectedImageName = "";
         let currentPath = "/home/nhk/comfy/ComfyUI/output";
 
@@ -170,26 +170,6 @@ app.registerExtension({
             }
         });
 
-        // Add toggle button
-        const toggleBtn = $el("button.nhk-toggle-button", {
-            textContent: "📁",
-            onclick: () => {
-                isGridExpanded = !isGridExpanded;
-                toggleBtn.textContent = isGridExpanded ? "🔼" : "📁";
-                
-                if (isGridExpanded) {
-                    // Hide selected image and show grid when opening
-                    selectedImageDisplay.style.display = "none";
-                    imageGrid.style.display = "grid";
-                    if (imageGrid.children.length === 0) {
-                        loadImages();
-                    }
-                } else {
-                    // Hide grid when closing
-                    imageGrid.style.display = "none";
-                }
-            }
-        });
 
         // Create image grid container
         const imageGrid = $el("div.nhk-image-grid");
@@ -227,7 +207,6 @@ app.registerExtension({
                     
                     // Close the grid
                     isGridExpanded = false;
-                    toggleBtn.textContent = "📁";
                     imageGrid.style.display = "none";
                 });
                 
@@ -235,10 +214,6 @@ app.registerExtension({
             });
         };
 
-        // Container for toggle button only (path is already shown in widget above)
-        const pathContainer = $el("div", {
-            style: { display: "flex", alignItems: "center", margin: "0", gap: "0" }
-        }, [toggleBtn]);
 
         // Create selected image display
         const selectedImageDisplay = $el("div.nhk-selected-image", {
@@ -265,7 +240,16 @@ app.registerExtension({
                     style: {
                         width: "100%",
                         height: "100%",
-                        objectFit: "contain"
+                        objectFit: "contain",
+                        cursor: "pointer"
+                    },
+                    onclick: () => {
+                        // Close selected image and show grid
+                        selectedImageDisplay.style.display = "none";
+                        isGridExpanded = true;
+                        if (imageGrid.children.length > 0) {
+                            imageGrid.style.display = "grid";
+                        }
                     }
                 });
                 
@@ -290,7 +274,6 @@ app.registerExtension({
                 flexDirection: "column"
             }
         }, [
-            pathContainer,
             selectedImageDisplay,
             imageGrid
         ]);
@@ -298,7 +281,7 @@ app.registerExtension({
         // Add container to node
         const widget = node.addDOMWidget("image_selector", "div", container);
         widget.computeSize = () => {
-            return [200, 50];
+            return [400, 250];
         };
 
         // Monitor node size changes and reveal grid when scaled vertically
@@ -306,8 +289,8 @@ app.registerExtension({
             if (node.size && node.size[1] > 120) {
                 const availableHeight = node.size[1] - 130;
                 container.style.height = availableHeight + "px";
-                // Show grid when node is scaled tall enough
-                if (availableHeight > 100) {
+                // Show grid when node is scaled tall enough AND user wants grid visible
+                if (availableHeight > 100 && isGridExpanded) {
                     imageGrid.style.display = "grid";
                 } else {
                     imageGrid.style.display = "none";
@@ -320,6 +303,9 @@ app.registerExtension({
 
         container.style.width = "100%";
         updateContainerHeight();
+
+        // Load images on startup since grid is visible by default
+        loadImages();
 
         // Monitor for size changes
         const sizeObserver = setInterval(updateContainerHeight, 100);
