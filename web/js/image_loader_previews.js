@@ -6,15 +6,16 @@ const IMAGE_LOADER_NODE = "ImageLoaderWithPreviews";
 
 let imagesByPath = {};
 
-const loadImageList = async (folderPath) => {
+const loadImageList = async (folderPath, sortMethod = "newest_first") => {
     try {
         const response = await api.fetchApi("/nhknodes/images", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ folder_path: folderPath })
+            body: JSON.stringify({ folder_path: folderPath, sort_method: sortMethod })
         });
-        imagesByPath[folderPath] = await response.json();
-        return imagesByPath[folderPath];
+        const cacheKey = `${folderPath}_${sortMethod}`;
+        imagesByPath[cacheKey] = await response.json();
+        return imagesByPath[cacheKey];
     } catch (error) {
         console.error("Failed to load images:", error);
         return {};
@@ -155,9 +156,47 @@ app.registerExtension({
         // Find the widgets
         const pathWidget = node.widgets?.find(w => w.name === "folder_path");
         const imageWidget = node.widgets?.find(w => w.name === "image");
+        const sortWidget = node.widgets?.find(w => w.name === "sort_method");
 
         // Set initial values
         currentPath = pathWidget?.value || currentPath;
+        
+        // Listen for sort method changes
+        if (sortWidget) {
+            const originalCallback = sortWidget.callback;
+            sortWidget.callback = function(value) {
+                if (originalCallback) originalCallback.call(this, value);
+                // Reload images with new sort method
+                if (isGridExpanded && imageGrid.children.length > 0) {
+                    loadImages();
+                }
+            };
+        }
+        
+        // Listen for image widget changes (dropdown selection)
+        if (imageWidget) {
+            const originalCallback = imageWidget.callback;
+            imageWidget.callback = function(value) {
+                if (originalCallback) originalCallback.call(this, value);
+                // Show selected image when chosen from dropdown
+                if (value && currentImageList.includes(value)) {
+                    showSelectedImage(value);
+                }
+            };
+        }
+        
+        // Listen for folder path changes
+        if (pathWidget) {
+            const originalCallback = pathWidget.callback;
+            pathWidget.callback = function(value) {
+                if (originalCallback) originalCallback.call(this, value);
+                // Update current path and reload grid
+                currentPath = value;
+                if (isGridExpanded) {
+                    loadImages();
+                }
+            };
+        }
         
         // Add path input
         const pathInput = $el("input.nhk-path-input", {
@@ -182,7 +221,8 @@ app.registerExtension({
             
             imageGrid.innerHTML = "Loading...";
             
-            const images = await loadImageList(currentPath);
+            const sortMethod = sortWidget?.value || "newest_first";
+            const images = await loadImageList(currentPath, sortMethod);
             const imageNames = Object.keys(images);
             
             // Update current image list
@@ -359,7 +399,7 @@ app.registerExtension({
         // Monitor node size changes and reveal grid when scaled vertically
         const updateContainerHeight = () => {
             if (node.size && node.size[1] > 120) {
-                const availableHeight = node.size[1] - 130;
+                const availableHeight = node.size[1] - 160;
                 container.style.height = availableHeight + "px";
                 // Show grid when node is scaled tall enough AND user wants grid visible
                 if (availableHeight > 100 && isGridExpanded) {

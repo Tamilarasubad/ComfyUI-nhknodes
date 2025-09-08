@@ -9,6 +9,7 @@ from nodes import LoadImage
 async def get_nhk_images(request):
     body = await request.json()
     folder_path = body.get("folder_path", folder_paths.get_output_directory())
+    sort_method = body.get("sort_method", "name_asc")
     
     if not os.path.exists(folder_path) or not os.path.isdir(folder_path):
         return web.json_response({})
@@ -19,6 +20,22 @@ async def get_nhk_images(request):
     for ext in image_extensions:
         files.extend(glob.glob(os.path.join(folder_path, ext)))
         files.extend(glob.glob(os.path.join(folder_path, ext.upper())))
+
+    # Sort files based on method
+    if sort_method == "name_asc":
+        files.sort(key=lambda x: os.path.basename(x).lower())
+    elif sort_method == "name_desc":
+        files.sort(key=lambda x: os.path.basename(x).lower(), reverse=True)
+    elif sort_method == "newest_first":
+        files.sort(key=lambda x: os.path.getctime(x), reverse=True)
+    elif sort_method == "oldest_first":
+        files.sort(key=lambda x: os.path.getctime(x))
+    elif sort_method == "recently_modified":
+        files.sort(key=lambda x: os.path.getmtime(x), reverse=True)
+    elif sort_method == "oldest_modified":
+        files.sort(key=lambda x: os.path.getmtime(x))
+    else:  # Default fallback
+        files.sort(key=lambda x: os.path.basename(x).lower())
 
     images = {}
     for file_path in files:
@@ -79,6 +96,7 @@ class ImageLoaderWithPreviews:
             "required": {
                 "folder_path": ("STRING", {"default": output_dir, "multiline": False}),
                 "image": (files, {}),
+                "sort_method": (["name_asc", "name_desc", "newest_first", "oldest_first", "recently_modified", "oldest_modified"], {"default": "newest_first"}),
             }
         }
 
