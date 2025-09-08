@@ -1,3 +1,23 @@
+/**
+ * ImageLoaderWithPreviews - ComfyUI Node Extension
+ * 
+ * Provides a visual image selection interface with thumbnail grid previews.
+ * Features:
+ * - 4-column thumbnail grid that appears when node is scaled vertically
+ * - Click thumbnails to select images and view them full-size on the node
+ * - Navigation arrows (◀▶) for browsing through images in selected folder
+ * - Sort options: name (asc/desc), creation date, modification date (newest/oldest first)
+ * - Integrates with ComfyUI's folder_path and image dropdown widgets
+ * - Auto-loads images from specified folder path with configurable sorting
+ * - Click selected image to return to grid view
+ * 
+ * Backend API endpoints:
+ * - POST /nhknodes/images: Get sorted image list from folder
+ * - GET /nhknodes/view: Serve image files for preview thumbnails
+ * 
+ * Compatible with ComfyUI's LoadImage node pattern for seamless workflow integration.
+ */
+
 import { app } from "../../../scripts/app.js";
 import { $el } from "../../../scripts/ui.js";
 import { api } from "../../../scripts/api.js";
@@ -198,18 +218,6 @@ app.registerExtension({
             };
         }
         
-        // Add path input
-        const pathInput = $el("input.nhk-path-input", {
-            type: "text",
-            value: currentPath,
-            placeholder: "Enter folder path...",
-            onchange: () => {
-                currentPath = pathInput.value;
-                if (isGridExpanded) {
-                    loadImages();
-                }
-            }
-        });
 
 
         // Create image grid container
