@@ -26,14 +26,8 @@ const createImageThumbnail = (filename, folderPath, onSelect) => {
         onclick: () => onSelect(filename)
     }, [
         $el("img", {
-            src: `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100%" height="100%" fill="#333"/><text x="50%" y="50%" text-anchor="middle" dy="0.3em" fill="#666" font-size="10">Loading...</text></svg>')}`,
-            onload: function() {
-                // Use direct GET request for faster loading
-                this.src = `/nhknodes/view?folder_path=${encodeURIComponent(folderPath)}&filename=${encodeURIComponent(filename)}&${+new Date()}`;
-            },
-            onerror: function() {
-                this.src = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100%" height="100%" fill="#666"/><text x="50%" y="50%" text-anchor="middle" dy="0.3em" fill="#999" font-size="8">Error</text></svg>')}`;
-            }
+            src: `/nhknodes/view?folder_path=${encodeURIComponent(folderPath)}&filename=${encodeURIComponent(filename)}`,
+            loading: "lazy"
         })
     ]);
     
@@ -182,14 +176,17 @@ app.registerExtension({
             onclick: () => {
                 isGridExpanded = !isGridExpanded;
                 toggleBtn.textContent = isGridExpanded ? "🔼" : "📁";
-                imageGrid.classList.toggle('expanded', isGridExpanded);
                 
                 if (isGridExpanded) {
-                    // Hide selected image when opening grid
+                    // Hide selected image and show grid when opening
                     selectedImageDisplay.style.display = "none";
+                    imageGrid.style.display = "grid";
                     if (imageGrid.children.length === 0) {
                         loadImages();
                     }
+                } else {
+                    // Hide grid when closing
+                    imageGrid.style.display = "none";
                 }
             }
         });
@@ -231,7 +228,7 @@ app.registerExtension({
                     // Close the grid
                     isGridExpanded = false;
                     toggleBtn.textContent = "📁";
-                    imageGrid.classList.remove('expanded');
+                    imageGrid.style.display = "none";
                 });
                 
                 imageGrid.appendChild(thumbnail);
@@ -260,30 +257,22 @@ app.registerExtension({
                 pathWidget.value = currentPath;
             }
             
-            // Show the selected image using ComfyUI's built-in image serving
+            // Show the selected image
             selectedImageDisplay.innerHTML = "";
             if (filename) {
                 const img = $el("img", {
-                    src: `/nhknodes/view?folder_path=${encodeURIComponent(currentPath)}&filename=${encodeURIComponent(filename)}&${+new Date()}`,
+                    src: `/nhknodes/view?folder_path=${encodeURIComponent(currentPath)}&filename=${encodeURIComponent(filename)}`,
                     style: {
                         width: "100%",
                         height: "100%",
                         objectFit: "contain"
-                    },
-                    onload: function() {
-                        this.style.opacity = "1";
-                    },
-                    onerror: function() {
-                        this.style.display = "none";
-                        const errorText = document.createElement("div");
-                        errorText.textContent = "Failed to load image";
-                        errorText.style.color = "#666";
-                        selectedImageDisplay.appendChild(errorText);
                     }
                 });
                 
                 selectedImageDisplay.appendChild(img);
                 selectedImageDisplay.style.display = "flex";
+                selectedImageDisplay.style.flex = "1";
+                selectedImageDisplay.style.minHeight = "100px";
             }
         };
 
