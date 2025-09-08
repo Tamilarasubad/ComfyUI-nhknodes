@@ -149,6 +149,8 @@ app.registerExtension({
         let isGridExpanded = true;
         let selectedImageName = "";
         let currentPath = "/home/nhk/comfy/ComfyUI/output";
+        let currentImageList = [];
+        let currentImageIndex = -1;
 
         // Find the widgets
         const pathWidget = node.widgets?.find(w => w.name === "folder_path");
@@ -182,6 +184,9 @@ app.registerExtension({
             
             const images = await loadImageList(currentPath);
             const imageNames = Object.keys(images);
+            
+            // Update current image list
+            currentImageList = imageNames;
             
             // Clear grid
             imageGrid.innerHTML = "";
@@ -223,6 +228,7 @@ app.registerExtension({
         // Function to show selected image on node
         const showSelectedImage = async (filename) => {
             selectedImageName = filename;
+            currentImageIndex = currentImageList.indexOf(filename);
             
             // Update the widget value for execution
             if (imageWidget) {
@@ -232,9 +238,22 @@ app.registerExtension({
                 pathWidget.value = currentPath;
             }
             
-            // Show the selected image
+            // Show the selected image with navigation
             selectedImageDisplay.innerHTML = "";
             if (filename) {
+                // Create container for image and arrows
+                const imageContainer = $el("div", {
+                    style: {
+                        position: "relative",
+                        width: "100%",
+                        height: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center"
+                    }
+                });
+
+                // Main image
                 const img = $el("img", {
                     src: `/nhknodes/view?folder_path=${encodeURIComponent(currentPath)}&filename=${encodeURIComponent(filename)}`,
                     style: {
@@ -252,8 +271,61 @@ app.registerExtension({
                         }
                     }
                 });
-                
-                selectedImageDisplay.appendChild(img);
+
+                // Left arrow (previous)
+                const leftArrow = $el("div", {
+                    textContent: "◀",
+                    style: {
+                        position: "absolute",
+                        left: "2px",
+                        top: "2px",
+                        backgroundColor: "rgba(0,0,0,0.5)",
+                        color: "#ccc",
+                        padding: "2px 4px",
+                        borderRadius: "2px",
+                        cursor: "pointer",
+                        fontSize: "10px",
+                        userSelect: "none",
+                        display: currentImageIndex > 0 ? "block" : "none",
+                        zIndex: "10"
+                    },
+                    onclick: (e) => {
+                        e.stopPropagation();
+                        if (currentImageIndex > 0) {
+                            showSelectedImage(currentImageList[currentImageIndex - 1]);
+                        }
+                    }
+                });
+
+                // Right arrow (next)
+                const rightArrow = $el("div", {
+                    textContent: "▶",
+                    style: {
+                        position: "absolute",
+                        right: "2px",
+                        top: "2px",
+                        backgroundColor: "rgba(0,0,0,0.5)",
+                        color: "#ccc",
+                        padding: "2px 4px",
+                        borderRadius: "2px",
+                        cursor: "pointer",
+                        fontSize: "10px",
+                        userSelect: "none",
+                        display: currentImageIndex < currentImageList.length - 1 ? "block" : "none",
+                        zIndex: "10"
+                    },
+                    onclick: (e) => {
+                        e.stopPropagation();
+                        if (currentImageIndex < currentImageList.length - 1) {
+                            showSelectedImage(currentImageList[currentImageIndex + 1]);
+                        }
+                    }
+                });
+
+                imageContainer.appendChild(img);
+                imageContainer.appendChild(leftArrow);
+                imageContainer.appendChild(rightArrow);
+                selectedImageDisplay.appendChild(imageContainer);
                 selectedImageDisplay.style.display = "flex";
                 selectedImageDisplay.style.flex = "1";
                 selectedImageDisplay.style.minHeight = "100px";
