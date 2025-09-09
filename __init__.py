@@ -32,7 +32,7 @@ def load_node_file(filename):
         print(f"Error loading {filename}: {e}")
 
 # Load all node files
-load_node_file("flux_latent_size_picker.py")
+load_node_file("size_picker.py")
 load_node_file("qwen_vision.py")
 load_node_file("cycling_switch.py")
 load_node_file("execution_counter.py")
@@ -40,6 +40,11 @@ load_node_file("image_grid_composite.py")
 load_node_file("image_grid_batch.py")
 load_node_file("double_switch.py")
 load_node_file("image_loader_with_previews.py")
+load_node_file("text_display.py")
+load_node_file("simple_text_input.py")
+load_node_file("text_combiner.py")
+load_node_file("text_template.py")
+load_node_file("llm_chat.py")
 
 print(f"NHK Nodes: Loaded {len(NODE_CLASS_MAPPINGS)} nodes: {list(NODE_CLASS_MAPPINGS.keys())}")
 

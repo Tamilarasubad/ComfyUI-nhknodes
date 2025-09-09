@@ -1,7 +1,9 @@
-# Execution Counter Node
-# Counts workflow executions and stops queue when target is reached
-# Perfect for batch processing - generate exactly N images then stop
-# Thread-safe with automatic queue halting via exception handling
+"""
+Counts workflow executions and stops queue when target is reached.
+Perfect for batch processing - generate exactly N images then stop.
+Thread-safe with automatic queue halting via exception handling.
+Category: nhk
+"""
 
 import time
 import threading
@@ -52,7 +54,8 @@ class ExecutionCounter:
     RETURN_TYPES = (anyType, "STRING", "INT", "BOOLEAN")
     RETURN_NAMES = ("output", "status", "current_count", "should_stop")
     FUNCTION = "execute"
-    CATEGORY = "nhk"
+    CATEGORY = "nhk/utility"
+    DESCRIPTION = "Counts workflow executions and stops queue when target is reached"
     
     def execute(self, input, target_count=100, reset_counter=False):
         with self.lock:

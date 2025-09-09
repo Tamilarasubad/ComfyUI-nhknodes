@@ -1,7 +1,9 @@
-# Image Grid Batch Node
-# Combines unlimited images into a single batch tensor with dynamic inputs
-# Perfect for batch processing multiple images simultaneously
-# Auto-adds input slots as you connect images - no more 6-image limit
+"""
+Combines unlimited images into a single batch tensor with dynamic inputs.
+Perfect for batch processing multiple images simultaneously.
+Auto-adds input slots as you connect images - no more 6-image limit.
+Category: nhk
+"""
 
 import torch
 
@@ -23,7 +25,8 @@ class ImageGridBatch:
     RETURN_TYPES = ("IMAGE", "INT")
     RETURN_NAMES = ("batch", "batch_count")
     FUNCTION = "create_batch"
-    CATEGORY = "nhk"
+    CATEGORY = "nhk/image"
+    DESCRIPTION = "Combines unlimited images into a single batch tensor with dynamic inputs"
     
     @classmethod
     def VALIDATE_INPUTS(cls, **kwargs):

@@ -1,7 +1,9 @@
-# Flux Latent Size Picker Node
-# Comprehensive size picker with model-optimized presets for Flux, Qwen, and SDXL
-# All dimensions are multiples of 32 for optimal generation quality
-# Includes popular aspect ratios: square, landscape, portrait, ultrawide, and cinema
+"""
+Comprehensive size picker with model-optimized presets for Flux, Qwen, and SDXL.
+All dimensions are multiples of 32 for optimal generation quality.
+Includes popular aspect ratios: square, landscape, portrait, ultrawide, and cinema.
+Category: nhk
+"""
 
 import torch
 import comfy.model_management
@@ -10,8 +12,8 @@ MAX_RESOLUTION=16384
 
 class SizePicker:
     """
-    Size picker with model-optimized presets for Flux, Qwen, and SDXL
-    All dimensions are multiples of 32 for optimal quality
+    Universal size picker with model-optimized presets for multiple AI models
+    All dimensions are multiples of 32 for optimal generation quality
     """
     
     def __init__(self):
@@ -124,7 +126,8 @@ class SizePicker:
     RETURN_TYPES = ("LATENT", "INT", "INT", "STRING")
     RETURN_NAMES = ("latent", "width", "height", "info")
     FUNCTION = "execute"
-    CATEGORY = "nhk"
+    CATEGORY = "nhk/utility"
+    DESCRIPTION = "Comprehensive size picker with model-optimized presets for Flux, Qwen, and SDXL"
     
     def execute(self, resolution, batch_size, width_override=0, height_override=0):
         # Parse resolution from dropdown

@@ -1,7 +1,9 @@
-# Double Switch Node
-# Universal switch with two pairs of inputs (A1/A2 and B1/B2)
-# Boolean selector chooses between outputting A pair or B pair
-# Uses lazy evaluation for efficiency - only processes the selected inputs
+"""
+Universal switch with two pairs of inputs (A1/A2 and B1/B2).
+Boolean selector chooses between outputting A pair or B pair.
+Uses lazy evaluation for efficiency - only processes the selected inputs.
+Category: nhk
+"""
 
 class AnyType(str):
     """Wildcard type that matches any input"""
@@ -38,7 +40,8 @@ class DoubleSwitch:
     RETURN_TYPES = (anyType, anyType)
     RETURN_NAMES = ("output1", "output2")
     FUNCTION = "execute"
-    CATEGORY = "nhk"
+    CATEGORY = "nhk/utility"
+    DESCRIPTION = "Universal switch with two pairs of inputs (A1/A2 and B1/B2)"
     
     def check_lazy_status(self, selector=True, A1=None, A2=None, B1=None, B2=None):
         """Only evaluate the inputs that will be used based on selector"""

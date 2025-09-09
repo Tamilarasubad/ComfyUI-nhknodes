@@ -1,7 +1,9 @@
-# Qwen Vision Node
-# Vision-Language model integration using Ollama's Qwen2.5VL
-# Analyze, describe, and answer questions about images
-# Configurable temperature, max tokens, and system prompts
+"""
+Vision-Language model integration using Ollama's Qwen2.5VL.
+Analyze, describe, and answer questions about images.
+Configurable temperature, max tokens, and system prompts.
+Category: nhk
+"""
 
 import subprocess
 import json
@@ -64,7 +66,8 @@ class QwenVision:
     RETURN_TYPES = ("STRING", "STRING")
     RETURN_NAMES = ("response", "info")
     FUNCTION = "analyze_image"
-    CATEGORY = "nhk"
+    CATEGORY = "nhk/ai"
+    DESCRIPTION = "Vision-Language model integration using Ollama's Qwen2.5VL"
     
     def analyze_image(self, image, system_prompt, prompt, model, temperature, max_tokens):
         try:

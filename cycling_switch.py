@@ -1,7 +1,9 @@
-# Cycling Switch Node
-# Automatically cycles through 2-5 connected inputs on each execution
-# Perfect for testing multiple prompts, models, or parameters in sequence
-# Features automatic reset and manual reset options
+"""
+Automatically cycles through unlimited connected inputs on each execution.
+Perfect for testing multiple prompts, models, or parameters in sequence.
+Features automatic reset and manual reset options.
+Category: nhk
+"""
 
 class AnyType(str):
     """Wildcard type that matches any input"""
@@ -44,7 +46,8 @@ class CyclingSwitch:
     RETURN_TYPES = (anyType, "STRING", "INT")
     RETURN_NAMES = ("output", "info", "current_index")
     FUNCTION = "execute"
-    CATEGORY = "nhk"
+    CATEGORY = "nhk/utility"
+    DESCRIPTION = "Automatically cycles through unlimited connected inputs on each execution"
     
     def execute(self, reset=False, **kwargs):
         # Collect all connected inputs (excluding reset parameter)

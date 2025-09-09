@@ -1,7 +1,9 @@
-# Image Grid Composite Node
-# Creates visual grid layouts from unlimited images with dynamic inputs
-# Configurable spacing, background colors, and grid arrangement
-# Auto-scales and centers images while preserving aspect ratios
+"""
+Creates visual grid layouts from unlimited images with dynamic inputs.
+Configurable spacing, background colors, and grid arrangement.
+Auto-scales and centers images while preserving aspect ratios.
+Category: nhk
+"""
 
 import torch
 import math
@@ -48,7 +50,8 @@ class ImageGridComposite:
     RETURN_TYPES = ("IMAGE", "INT", "INT")
     RETURN_NAMES = ("composite", "width", "height")
     FUNCTION = "create_composite"
-    CATEGORY = "nhk"
+    CATEGORY = "nhk/image"
+    DESCRIPTION = "Creates visual grid layouts from unlimited images with dynamic inputs"
     
     @classmethod
     def VALIDATE_INPUTS(cls, **kwargs):

@@ -1,7 +1,9 @@
-# Image Loader with Previews Node
-# Advanced image loader with folder browsing and preview functionality
-# Browse any folder, sort by multiple methods, and preview on hover
-# Includes web API endpoints for dynamic folder listing and image serving
+"""
+Advanced image loader with folder browsing and preview functionality.
+Browse any folder, sort by multiple methods, and preview on hover.
+Includes web API endpoints for dynamic folder listing and image serving.
+Category: nhk
+"""
 
 import os
 import glob
@@ -108,7 +110,7 @@ class ImageLoaderWithPreviews:
     RETURN_TYPES = ("IMAGE", "MASK", "STRING")
     RETURN_NAMES = ("image", "mask", "filename")
     FUNCTION = "load_image_with_previews"
-    CATEGORY = "nhk"
+    CATEGORY = "nhk/image"
     DESCRIPTION = "Load an image with preview functionality from any folder. Select folder path and get image previews on hover."
 
     def load_image_with_previews(self, folder_path, image, sort_method):
