@@ -1,3 +1,8 @@
+# Flux Latent Size Picker Node
+# Comprehensive size picker with model-optimized presets for Flux, Qwen, and SDXL
+# All dimensions are multiples of 32 for optimal generation quality
+# Includes popular aspect ratios: square, landscape, portrait, ultrawide, and cinema
+
 import torch
 import comfy.model_management
 

@@ -1,3 +1,8 @@
+# Double Switch Node
+# Universal switch with two pairs of inputs (A1/A2 and B1/B2)
+# Boolean selector chooses between outputting A pair or B pair
+# Uses lazy evaluation for efficiency - only processes the selected inputs
+
 class AnyType(str):
     """Wildcard type that matches any input"""
     def __ne__(self, __value: object) -> bool:

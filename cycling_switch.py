@@ -1,3 +1,8 @@
+# Cycling Switch Node
+# Automatically cycles through 2-5 connected inputs on each execution
+# Perfect for testing multiple prompts, models, or parameters in sequence
+# Features automatic reset and manual reset options
+
 class AnyType(str):
     """Wildcard type that matches any input"""
     def __ne__(self, __value: object) -> bool:
@@ -7,8 +12,8 @@ anyType = AnyType("*")
 
 class CyclingSwitch:
     """
-    Cycles through connected inputs automatically.
-    Supports 2-5 inputs and auto-resets to first input when cycle completes.
+    Cycles through unlimited connected inputs automatically with dynamic input support.
+    Auto-resets to first input when cycle completes or input count changes.
     """
     
     def __init__(self):
@@ -19,56 +24,60 @@ class CyclingSwitch:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "input_1": (anyType, {}),
-                "input_2": (anyType, {}),
-            },
-            "optional": {
-                "input_3": (anyType, {}),
-                "input_4": (anyType, {}),
-                "input_5": (anyType, {}),
                 "reset": ("BOOLEAN", {
                     "default": False,
-                    "tooltip": "Reset cycle back to input_1"
+                    "tooltip": "Reset cycle back to first input"
                 }),
-            }
+            },
+            "optional": {},
         }
     
     @classmethod
     def IS_CHANGED(cls, **kwargs):
         return float("NaN")
     
+    @classmethod
+    def VALIDATE_INPUTS(cls, **kwargs):
+        # Accept dynamic inputs; validation handled at runtime
+        return True
+    
     RETURN_TYPES = (anyType, "STRING", "INT")
     RETURN_NAMES = ("output", "info", "current_index")
     FUNCTION = "execute"
     CATEGORY = "nhk"
     
-    def execute(self, input_1, input_2, input_3=None, input_4=None, input_5=None, reset=False):
-        # Collect connected inputs
-        inputs = [input_1, input_2]
-        if input_3 is not None:
-            inputs.append(input_3)
-        if input_4 is not None:
-            inputs.append(input_4)
-        if input_5 is not None:
-            inputs.append(input_5)
+    def execute(self, reset=False, **kwargs):
+        # Collect all connected inputs (excluding reset parameter)
+        inputs = [
+            value for key, value in kwargs.items() 
+            if key != 'reset' and value is not None
+        ]
         
         input_count = len(inputs)
+        
+        # Handle case with no inputs
+        if input_count == 0:
+            return (None, "No inputs connected", 0)
         
         # Reset if requested or input count changed
         if reset or input_count != self.last_input_count:
             self.current_index = 0
             self.last_input_count = input_count
         
+        # Ensure index is within bounds (in case inputs were removed)
+        if self.current_index >= input_count:
+            self.current_index = 0
+        
         # Get current input
         selected_input = inputs[self.current_index]
         
         # Create info string
-        info = f"Using input_{self.current_index + 1} of {input_count} connected inputs"
+        info = f"Using input {self.current_index + 1} of {input_count} connected inputs"
         
         # Advance to next input for next execution
         self.current_index = (self.current_index + 1) % input_count
         
-        return (selected_input, info, self.current_index)
+        return (selected_input, info, self.current_index + 1)
 
 # Node registration
 NODE_CLASS_MAPPINGS = {

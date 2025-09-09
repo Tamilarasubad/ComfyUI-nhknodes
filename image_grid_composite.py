@@ -1,9 +1,14 @@
+# Image Grid Composite Node
+# Creates visual grid layouts from unlimited images with dynamic inputs
+# Configurable spacing, background colors, and grid arrangement
+# Auto-scales and centers images while preserving aspect ratios
+
 import torch
 import math
 
 class ImageGridComposite:
     """
-    Creates a grid composite from up to 6 input images.
+    Creates a grid composite from a dynamic number of input images.
     Images are arranged left-to-right, top-to-bottom with configurable spacing.
     """
     
@@ -21,7 +26,7 @@ class ImageGridComposite:
                 "images_per_row": ("INT", {
                     "default": 2,
                     "min": 1,
-                    "max": 6,
+                    "max": 20,
                     "step": 1,
                     "tooltip": "Number of images per row in the grid"
                 }),
@@ -37,14 +42,7 @@ class ImageGridComposite:
                     "tooltip": "Background color for spacing and empty cells"
                 }),
             },
-            "optional": {
-                "image1": ("IMAGE",),
-                "image2": ("IMAGE",),
-                "image3": ("IMAGE",),
-                "image4": ("IMAGE",),
-                "image5": ("IMAGE",),
-                "image6": ("IMAGE",),
-            }
+            "optional": {},
         }
     
     RETURN_TYPES = ("IMAGE", "INT", "INT")
@@ -52,14 +50,16 @@ class ImageGridComposite:
     FUNCTION = "create_composite"
     CATEGORY = "nhk"
     
-    def create_composite(self, width, images_per_row, spacing, background_color, 
-                        image1=None, image2=None, image3=None, image4=None, image5=None, image6=None):
-        
-        # Collect non-None images
-        images = []
-        for img in [image1, image2, image3, image4, image5, image6]:
-            if img is not None:
-                images.append(img)
+    @classmethod
+    def VALIDATE_INPUTS(cls, **kwargs):
+        # Accept dynamic inputs; validation handled at runtime
+        return True
+    
+    def create_composite(self, width, images_per_row, spacing, background_color, **kwargs):
+        # Collect all connected IMAGE tensors regardless of input names
+        images = [
+            value for value in kwargs.values() if isinstance(value, torch.Tensor)
+        ]
         
         if not images:
             # Return a blank image if no inputs

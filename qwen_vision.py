@@ -1,3 +1,8 @@
+# Qwen Vision Node
+# Vision-Language model integration using Ollama's Qwen2.5VL
+# Analyze, describe, and answer questions about images
+# Configurable temperature, max tokens, and system prompts
+
 import subprocess
 import json
 import base64

@@ -1,3 +1,8 @@
+# Execution Counter Node
+# Counts workflow executions and stops queue when target is reached
+# Perfect for batch processing - generate exactly N images then stop
+# Thread-safe with automatic queue halting via exception handling
+
 import time
 import threading
 

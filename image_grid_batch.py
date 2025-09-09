@@ -1,24 +1,23 @@
+# Image Grid Batch Node
+# Combines unlimited images into a single batch tensor with dynamic inputs
+# Perfect for batch processing multiple images simultaneously
+# Auto-adds input slots as you connect images - no more 6-image limit
+
 import torch
 
 class ImageGridBatch:
     """
-    Creates a batch from up to 6 input images.
+    Creates a batch from a dynamic number of input images.
     Simply combines multiple images into a single batch tensor.
     Output displays as separate images in batch rather than a composite.
     """
     
     @classmethod
     def INPUT_TYPES(cls):
+        # Frontend JS dynamically adds IMAGE inputs; keep declarations empty
         return {
             "required": {},
-            "optional": {
-                "image1": ("IMAGE",),
-                "image2": ("IMAGE",),
-                "image3": ("IMAGE",),
-                "image4": ("IMAGE",),
-                "image5": ("IMAGE",),
-                "image6": ("IMAGE",),
-            }
+            "optional": {},
         }
     
     RETURN_TYPES = ("IMAGE", "INT")
@@ -26,13 +25,16 @@ class ImageGridBatch:
     FUNCTION = "create_batch"
     CATEGORY = "nhk"
     
-    def create_batch(self, image1=None, image2=None, image3=None, image4=None, image5=None, image6=None):
-        
-        # Collect non-None images
-        images = []
-        for img in [image1, image2, image3, image4, image5, image6]:
-            if img is not None:
-                images.append(img)
+    @classmethod
+    def VALIDATE_INPUTS(cls, **kwargs):
+        # Accept dynamic inputs; validation handled at runtime
+        return True
+    
+    def create_batch(self, **kwargs):
+        # Collect all connected IMAGE tensors regardless of input names
+        images = [
+            value for value in kwargs.values() if isinstance(value, torch.Tensor)
+        ]
         
         if not images:
             # Return empty batch if no inputs
