@@ -210,10 +210,15 @@ app.registerExtension({
             const originalCallback = pathWidget.callback;
             pathWidget.callback = function(value) {
                 if (originalCallback) originalCallback.call(this, value);
-                // Update current path and reload grid
+                // Update current path and always reload grid (even if not visible)
                 currentPath = value;
-                if (isGridExpanded) {
-                    loadImages();
+                loadImages();
+                // Clear selected image since we changed folders
+                selectedImageName = "";
+                selectedImageDisplay.style.display = "none";
+                isGridExpanded = true;
+                if (imageGrid.children.length > 0) {
+                    imageGrid.style.display = "grid";
                 }
             };
         }
@@ -225,7 +230,6 @@ app.registerExtension({
 
         // Function to load and display images
         const loadImages = async () => {
-            if (!isGridExpanded) return;
             
             imageGrid.innerHTML = "Loading...";
             
