@@ -123,7 +123,15 @@ class MyNode:
 ### Testing
 Restart ComfyUI to reload the custom nodes after changes. No specific build process required.
 
-### Git Workflow
+### Response Accuracy Protocol
+**CRITICAL**: Always prefix technical responses with confidence level:
+- **VERIFIED:** When you have direct evidence/documentation
+- **ASSUMPTION:** When you're inferring or making educated guesses  
+- **NEED TO RESEARCH:** When you don't know and must investigate
+
+Never give false certainty. If unsure, research first rather than guessing.
+
+## Git Workflow
 **IMPORTANT**: When the user says "commit", always use `git add .` to add ALL changes without discrimination, then commit everything.
 
 ## Key Patterns
