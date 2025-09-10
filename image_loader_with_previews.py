@@ -86,23 +86,11 @@ async def get_nhk_files(request):
 class ImageLoaderWithPreviews:
     @classmethod
     def INPUT_TYPES(s):
-        # Get default directory images for initial dropdown
         output_dir = folder_paths.get_output_directory()
-        try:
-            files = []
-            if os.path.exists(output_dir):
-                image_extensions = [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp", ".tiff"]
-                for file in os.listdir(output_dir):
-                    if any(file.lower().endswith(ext) for ext in image_extensions):
-                        files.append(file)
-            files = sorted(files) if files else [""]
-        except:
-            files = [""]
-            
         return {
             "required": {
                 "folder_path": ("STRING", {"default": output_dir, "multiline": False}),
-                "image": (files, {}),
+                "image": ("STRING", {"default": ""}),
                 "sort_method": (["name_asc", "name_desc", "newest_first", "oldest_first", "recently_modified", "oldest_modified"], {"default": "newest_first"}),
             }
         }
@@ -114,14 +102,28 @@ class ImageLoaderWithPreviews:
     DESCRIPTION = "Load an image with preview functionality from any folder. Select folder path and get image previews on hover."
 
     def load_image_with_previews(self, folder_path, image, sort_method):
-        if not image:
+        if not image or not image.strip():
             raise ValueError("No image selected")
+            
+        # Validate folder path exists
+        if not os.path.exists(folder_path) or not os.path.isdir(folder_path):
+            raise ValueError(f"Folder path does not exist: {folder_path}")
             
         # Construct the full image path
         image_path = os.path.join(folder_path, image)
         
+        # Validate image file exists
         if not os.path.exists(image_path):
             raise ValueError(f"Image not found: {image_path}")
+            
+        # Validate image file is within the specified folder (security check)
+        if not os.path.commonpath([folder_path, os.path.abspath(image_path)]) == folder_path:
+            raise ValueError(f"Image path outside of specified folder: {image_path}")
+            
+        # Validate file is an image
+        image_extensions = [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp", ".tiff"]
+        if not any(image.lower().endswith(ext) for ext in image_extensions):
+            raise ValueError(f"File is not a supported image format: {image}")
         
         # Use the LoadImage functionality directly
         from PIL import Image, ImageOps, ImageSequence

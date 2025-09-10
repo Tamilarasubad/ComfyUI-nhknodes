@@ -240,23 +240,13 @@ app.registerExtension({
             // Update current image list
             currentImageList = imageNames;
             
-            // Update the dropdown widget options
+            // Update the image widget value (now a string input, not dropdown)
             if (imageWidget) {
-                imageWidget.options.values = imageNames.length > 0 ? imageNames : [""];
-                imageWidget.value = imageNames.length > 0 ? imageNames[0] : "";
-                // Force update the widget UI
-                if (imageWidget.element) {
-                    const select = imageWidget.element;
-                    select.innerHTML = "";
-                    imageWidget.options.values.forEach(value => {
-                        const option = document.createElement("option");
-                        option.value = value;
-                        option.textContent = value;
-                        if (value === imageWidget.value) {
-                            option.selected = true;
-                        }
-                        select.appendChild(option);
-                    });
+                // Set default value to first image if available
+                if (imageNames.length > 0 && !selectedImageName) {
+                    imageWidget.value = imageNames[0];
+                } else if (imageNames.length === 0) {
+                    imageWidget.value = "";
                 }
             }
             
