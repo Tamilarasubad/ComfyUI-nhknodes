@@ -5,7 +5,7 @@ A comprehensive collection of utility nodes for ComfyUI workflows. Organized int
 ## 🌟 Featured Node
 
 ### 🖼️ Image Loader With Previews
-The standout feature of this collection - an advanced image loader that revolutionizes how you browse and select images in ComfyUI.
+The standout feature of this collection - an advanced image loader that hopefully simplifies how you browse and select images in ComfyUI.
 
 <p align="center">
   <img src="./images/loader_1.png" width="45%" />
@@ -14,8 +14,8 @@ The standout feature of this collection - an advanced image loader that revoluti
 
 - **Browse any folder** on your system, not just ComfyUI's input folder
 - **Live image previews** - see images before selecting
-- **Multiple sorting options**: name, date modified, file size
-- **Seamless integration** with ComfyUI's image pipeline
+- **Multiple sorting options**: name, date modified, created
+
 
 Perfect for artists managing large image libraries or working with images from multiple sources.
 
