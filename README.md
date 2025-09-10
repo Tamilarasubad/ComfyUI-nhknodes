@@ -17,8 +17,6 @@ The standout feature of this collection - an advanced image loader that hopefull
 - **Multiple sorting options**: name, date modified, created
 
 
-Perfect for artists managing large image libraries or working with images from multiple sources.
-
 ## 📦 Installation
 
 ### Via ComfyUI Manager (Recommended)
