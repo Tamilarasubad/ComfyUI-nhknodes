@@ -28,3 +28,6 @@ logs/
 
 # Environment variables
 .env
+
+# Claude Code development guidance (internal only)
+CLAUDE.md
