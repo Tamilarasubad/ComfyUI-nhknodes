@@ -236,6 +236,26 @@ app.registerExtension({
             // Update current image list
             currentImageList = imageNames;
             
+            // Update the dropdown widget options
+            if (imageWidget) {
+                imageWidget.options.values = imageNames.length > 0 ? imageNames : [""];
+                imageWidget.value = imageNames.length > 0 ? imageNames[0] : "";
+                // Force update the widget UI
+                if (imageWidget.element) {
+                    const select = imageWidget.element;
+                    select.innerHTML = "";
+                    imageWidget.options.values.forEach(value => {
+                        const option = document.createElement("option");
+                        option.value = value;
+                        option.textContent = value;
+                        if (value === imageWidget.value) {
+                            option.selected = true;
+                        }
+                        select.appendChild(option);
+                    });
+                }
+            }
+            
             // Clear grid
             imageGrid.innerHTML = "";
             
@@ -428,6 +448,6 @@ app.registerExtension({
         loadImages();
 
         // Monitor for size changes
-        const sizeObserver = setInterval(updateContainerHeight, 100);
+        setInterval(updateContainerHeight, 100);
     }
 });
