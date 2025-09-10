@@ -7,8 +7,13 @@ A comprehensive collection of utility nodes for ComfyUI workflows. Organized int
 ### 🖼️ Image Loader With Previews
 The standout feature of this collection - an advanced image loader that revolutionizes how you browse and select images in ComfyUI.
 
+<p align="center">
+  <img src="./images/loader_1.png" width="45%" />
+  <img src="./images/loader_2.png" width="45%" />
+</p>
+
 - **Browse any folder** on your system, not just ComfyUI's input folder
-- **Live image previews**  see images before selecting
+- **Live image previews** - see images before selecting
 - **Multiple sorting options**: name, date modified, file size
 - **Seamless integration** with ComfyUI's image pipeline
 
@@ -27,7 +32,7 @@ Perfect for artists managing large image libraries or working with images from m
 2. Restart ComfyUI
 3. Nodes will appear in organized categories under `nhk`
 
-## 🗂️ Node Categories
+## 🗂️ Other cool nodes
 
 ### 🔤 Text Processing (`nhk/text`)
 - **📝 Simple Text Input** - Clean text input with pass-through output
