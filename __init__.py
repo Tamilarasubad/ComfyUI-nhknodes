@@ -45,6 +45,7 @@ load_node_file("simple_text_input.py")
 load_node_file("text_combiner.py")
 load_node_file("text_template.py")
 load_node_file("openai_api.py")
+load_node_file("interval_gate.py")
 
 print(f"NHK Nodes: Loaded {len(NODE_CLASS_MAPPINGS)} nodes: {list(NODE_CLASS_MAPPINGS.keys())}")
 

@@ -44,7 +44,8 @@ The standout feature of this collection - an advanced image loader that hopefull
 - **🎯 Image Grid Composite** - Create visual grids with configurable spacing and backgrounds
 
 ### ⚙️ Workflow Utilities (`nhk/utility`)
-- **🔄 Cycling Switch** - Automatically cycle through unlimited inputs
+- **🔄 Cycling Switch** - Automatically cycle through unlimited inputs with configurable stay duration
+- **🚪 Interval Gate** - Controls workflow branching with interval-based on/off switching
 - **🔀 Double Switch** - A/B switch with pairs of inputs (ex: img and text pairs)
 - **⏱️ Execution Counter** - Count executions and auto-stop queues, used to circumvent Comfy 100 runs limit.
 - **📐 Size Picker** - Model-optimized presets for Flux, SDXL, and Qwen
@@ -58,6 +59,8 @@ The standout feature of this collection - an advanced image loader that hopefull
 ## 🚀 Key Features
 
 - **Dynamic Inputs** - Many nodes support unlimited inputs that auto-expand as you connect
+- **Conditional Branching** - Interval Gate enables periodic workflow paths (upscale every 5th image, etc.)
+- **Configurable Cycling** - Cycling Switch with stay duration control for precise input testing
 - **Smart UI** - Hover tooltips and emoji icons for easy identification
 - **Clean Organization** - Logical categories make nodes easy to find
 - **Professional Quality** - Consistent design and error handling throughout
