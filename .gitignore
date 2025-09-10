@@ -31,3 +31,6 @@ logs/
 
 # Claude Code development guidance (internal only)
 CLAUDE.md
+
+# Python bytecode
+__pycache__/
