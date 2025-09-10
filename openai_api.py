@@ -79,33 +79,35 @@ class LLMChat:
             
             # Use Responses API for GPT-5 models, Chat Completions for GPT-4 models
             if model.startswith("gpt-5"):
-                # Responses API format
+                # Responses API format - system message goes in input array
+                input_content = []
+                
+                # Add system message first if provided
+                if system_message and system_message.strip():
+                    input_content.append({"role": "system", "content": system_message.strip()})
+                
+                # Add user message and image
                 if image is not None:
                     # Convert ComfyUI tensor to PIL Image
                     pil_image = Image.fromarray(np.clip(255. * image.cpu().numpy().squeeze(), 0, 255).astype(np.uint8))
                     base64_image = self.pil_to_base64(pil_image)
                     
-                    input_content = [{
+                    input_content.append({
                         "role": "user",
                         "content": [
                             {"type": "input_text", "text": user_message.strip()},
                             {"type": "input_image", "image_url": f"data:image/png;base64,{base64_image}"}
                         ]
-                    }]
+                    })
                 else:
-                    input_content = [{"role": "user", "content": user_message.strip()}]
+                    input_content.append({"role": "user", "content": user_message.strip()})
                 
-                kwargs = {
-                    "model": model,
-                    "input": input_content,
-                    "reasoning": {"effort": "minimal"},
-                    "text": {"verbosity": "low"}
-                }
-                
-                if system_message and system_message.strip():
-                    kwargs["system"] = system_message.strip()
-                
-                response = client.responses.create(**kwargs)
+                response = client.responses.create(
+                    model=model,
+                    input=input_content,
+                    reasoning={"effort": "minimal"},
+                    text={"verbosity": "low"}
+                )
                 return (response.output_text,)
                 
             else:
