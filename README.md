@@ -50,7 +50,7 @@ Perfect for artists managing large image libraries or working with images from m
 
 ### 🤖 AI & Machine Learning (`nhk/ai`)
 - **👁️ Qwen Vision** - Analyze images with Ollama's Qwen2.5VL vision model
-- **🤖 LLM Chat** - Chat with OpenAI GPT-4o (requires API key)
+- **🤖 OpenAI API** - Chat with OpenAI GPT-4/GPT-5 models with vision support (requires API key)
 
 ## 🚀 Key Features
 
@@ -61,11 +61,13 @@ Perfect for artists managing large image libraries or working with images from m
 
 ## 📋 Requirements
 
-### For LLM Chat Node
+### For OpenAI API Node
 - OpenAI API key in `.env` file:
   ```
   OPENAI_API_KEY=your_api_key_here
   ```
+- Supports GPT-4 (gpt-4o, gpt-4o-mini, chatgpt-4o-latest) and GPT-5 (gpt-5, gpt-5-mini, gpt-5-nano) models
+- Vision capabilities for image analysis with all models
 
 ### For Qwen Vision Node  
 - Ollama installed and running
@@ -91,4 +93,4 @@ Contributions welcome! Please follow the existing code style and add appropriate
 
 ---
 
-**Created by NHK** | [GitHub](https://github.com/Enashka) | [ComfyUI Custom Nodes Manager](https://github.com/ltdrdata/ComfyUI-Manager)
+**Created by NHK** | [GitHub](https://github.com/Enashka/ComfyUI-nhknodes) | [ComfyUI Registry](https://registry.comfy.org/)
