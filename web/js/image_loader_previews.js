@@ -438,8 +438,12 @@ app.registerExtension({
         container.style.width = "100%";
         updateContainerHeight();
 
-        // Load images on startup since grid is visible by default
-        loadImages();
+        // Load images on startup - delay to allow widget values to load from saved workflows
+        setTimeout(() => {
+            // Update current path in case it was loaded from saved workflow
+            currentPath = pathWidget?.value || currentPath;
+            loadImages();
+        }, 100);
 
         // Monitor for size changes
         setInterval(updateContainerHeight, 100);
