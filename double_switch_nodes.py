@@ -57,11 +57,51 @@ class DoubleSwitch:
         else:
             return (B1, B2)
 
+class DoubleSwitchOut:
+    """
+    Double switch output that takes one double input and switches between 
+    two different double outputs (A1/A2 or B1/B2) based on selector.
+    Works with any data type using lazy evaluation for efficiency.
+    """
+    
+    def __init__(self):
+        pass
+    
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "selector": ("BOOLEAN", {
+                    "default": True,
+                    "tooltip": "True = output to A outputs, False = output to B outputs"
+                }),
+                "input1": (anyType, {}),
+                "input2": (anyType, {}),
+            }
+        }
+    
+    RETURN_TYPES = (anyType, anyType, anyType, anyType)
+    RETURN_NAMES = ("A1", "A2", "B1", "B2")
+    FUNCTION = "execute"
+    CATEGORY = "nhk/utility"
+    DESCRIPTION = "Takes one double input and switches between two different double outputs"
+    
+    def execute(self, selector, input1, input2):
+        """Route double input to either A outputs or B outputs based on selector"""
+        if selector:
+            # Output to A pair, B pair gets None
+            return (input1, input2, None, None)
+        else:
+            # Output to B pair, A pair gets None
+            return (None, None, input1, input2)
+
 # Node registration
 NODE_CLASS_MAPPINGS = {
     "DoubleSwitch": DoubleSwitch,
+    "DoubleSwitchOut": DoubleSwitchOut,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "DoubleSwitch": "🔀 Double Switch",
+    "DoubleSwitch": "🔀 Double Switch - In",
+    "DoubleSwitchOut": "🔀 Double Switch - Out",
 }

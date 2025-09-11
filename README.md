@@ -12,7 +12,7 @@ The standout feature of this collection - an advanced image loader that hopefull
   <img src="./images/loader_2.png" width="45%" />
 </p>
 
-- **Browse any folder** on your system, not just ComfyUI's input folder
+- **Browse from any folder** on your system
 - **Live image previews** - see images before selecting
 - **Multiple sorting options**: name, date modified, created
 
@@ -46,7 +46,8 @@ The standout feature of this collection - an advanced image loader that hopefull
 ### ⚙️ Workflow Utilities (`nhk/utility`)
 - **🔄 Cycling Switch** - Automatically cycle through unlimited inputs with configurable stay duration
 - **🚪 Interval Gate** - Controls workflow branching with interval-based on/off switching
-- **🔀 Double Switch** - A/B switch with pairs of inputs (ex: img and text pairs)
+- **🔀 Double Switch - In** - A/B switch with pairs of inputs (ex: img and text pairs)
+- **🔀 Double Switch - Out** - Routes one double input to either A or B double outputs
 - **⏱️ Execution Counter** - Count executions and auto-stop queues, used to circumvent Comfy 100 runs limit.
 - **📐 Size Picker** - Model-optimized presets for Flux, SDXL, and Qwen
 - **📍 Set Node** - Create variable tunnels for cleaner graphs
