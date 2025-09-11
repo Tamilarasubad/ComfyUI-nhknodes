@@ -105,11 +105,23 @@ class SizePicker:
                     "2112x896 (2.39:1 Cinema)",
                     
                     # SDXL Legacy
-                    "1024x1024 (SDXL Base)",
-                    "832x1216 (SDXL Portrait)",
-                    "1216x832 (SDXL Landscape)",
-                    "1344x768 (SDXL 16:9)",
-                    "1536x640 (SDXL Wide)",
+                    "1024x1024 (1:1 SDXL Base)",
+                    "832x1216 (2:3 SDXL Portrait)",
+                    "1216x832 (3:2 SDXL Landscape)",
+                    "1344x768 (16:9 SDXL)",
+                    "1536x640 (12:5 SDXL Wide)",
+                    
+                    # Smaller Resolutions
+                    "640x640 (1:1 Small)",
+                    "512x512 (1:1 Compact)",
+                    "768x768 (1:1 Medium)",
+                    "896x896 (1:1 SD Format)",
+                    "512x768 (2:3 Small Portrait)",
+                    "768x512 (3:2 Small Landscape)",
+                    "640x360 (16:9 Small)",
+                    "480x848 (9:16 Small Portrait)",
+                    "544x960 (9:16 Medium Portrait)",
+                    "608x1088 (9:16 Large Portrait)",
                 ], {"default": "1024x1024 (1:1 Flux)"}),
                 
                 "batch_size": ("INT", {"default": 1, "min": 1, "max": 64}),
