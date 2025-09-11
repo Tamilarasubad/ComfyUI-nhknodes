@@ -169,7 +169,6 @@ app.registerExtension({
 
         let isGridExpanded = true;
         let selectedImageName = "";
-        let currentPath = "/home/nhk/comfy/ComfyUI/output";
         let currentImageList = [];
         let currentImageIndex = -1;
 
@@ -178,8 +177,9 @@ app.registerExtension({
         const imageWidget = node.widgets?.find(w => w.name === "image");
         const sortWidget = node.widgets?.find(w => w.name === "sort_method");
 
-        // Set initial values
-        currentPath = pathWidget?.value || currentPath;
+        // Function to get current path from widget (always fresh)
+        const getCurrentPath = () => pathWidget?.value || "/home/nhk/comfy/ComfyUI/output";
+        let currentPath = getCurrentPath();
         
         // Listen for sort method changes
         if (sortWidget) {
@@ -233,6 +233,8 @@ app.registerExtension({
             
             imageGrid.innerHTML = "Loading...";
             
+            // Always get fresh path from widget
+            currentPath = getCurrentPath();
             const sortMethod = sortWidget?.value || "newest_first";
             const images = await loadImageList(currentPath, sortMethod);
             const imageNames = Object.keys(images);
@@ -440,8 +442,7 @@ app.registerExtension({
 
         // Load images on startup - delay to allow widget values to load from saved workflows
         setTimeout(() => {
-            // Update current path in case it was loaded from saved workflow
-            currentPath = pathWidget?.value || currentPath;
+            // loadImages() will automatically get fresh path from getCurrentPath()
             loadImages();
         }, 100);
 
