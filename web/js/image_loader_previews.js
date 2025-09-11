@@ -167,10 +167,22 @@ app.registerExtension({
         }
         console.log("🖼️ Processing ImageLoaderWithPreviews node!");
 
-        let isGridExpanded = true;
-        let selectedImageName = "";
-        let currentImageList = [];
-        let currentImageIndex = -1;
+        // Store state on the node itself for persistence across tab switches
+        if (!node.nhkImageLoaderState) {
+            node.nhkImageLoaderState = {
+                isGridExpanded: true,
+                selectedImageName: "",
+                currentImageList: [],
+                currentImageIndex: -1
+            };
+        }
+        const state = node.nhkImageLoaderState;
+        
+        // Use state variables for backwards compatibility
+        let isGridExpanded = state.isGridExpanded;
+        let selectedImageName = state.selectedImageName;
+        let currentImageList = state.currentImageList;
+        let currentImageIndex = state.currentImageIndex;
 
         // Find the widgets
         const pathWidget = node.widgets?.find(w => w.name === "folder_path");
@@ -215,8 +227,10 @@ app.registerExtension({
                 loadImages();
                 // Clear selected image since we changed folders
                 selectedImageName = "";
+                state.selectedImageName = "";
                 selectedImageDisplay.style.display = "none";
                 isGridExpanded = true;
+                state.isGridExpanded = true;
                 if (imageGrid.children.length > 0) {
                     imageGrid.style.display = "grid";
                 }
@@ -239,8 +253,9 @@ app.registerExtension({
             const images = await loadImageList(currentPath, sortMethod);
             const imageNames = Object.keys(images);
             
-            // Update current image list
+            // Update current image list and persist
             currentImageList = imageNames;
+            state.currentImageList = imageNames;
             
             // Update the image widget value (now a string input, not dropdown)
             if (imageWidget) {
@@ -274,8 +289,9 @@ app.registerExtension({
                     // Show the selected image on the node
                     showSelectedImage(selectedFilename);
                     
-                    // Close the grid
+                    // Close the grid and persist state
                     isGridExpanded = false;
+                    state.isGridExpanded = false;
                     imageGrid.style.display = "none";
                 });
                 
@@ -292,7 +308,10 @@ app.registerExtension({
         // Function to show selected image on node
         const showSelectedImage = async (filename) => {
             selectedImageName = filename;
+            selectedImageName = filename;
+            state.selectedImageName = filename;
             currentImageIndex = currentImageList.indexOf(filename);
+            state.currentImageIndex = currentImageIndex;
             
             // Update the widget value for execution
             if (imageWidget) {
@@ -330,6 +349,7 @@ app.registerExtension({
                         // Close selected image and show grid
                         selectedImageDisplay.style.display = "none";
                         isGridExpanded = true;
+                        state.isGridExpanded = true;
                         if (imageGrid.children.length > 0) {
                             imageGrid.style.display = "grid";
                         }
@@ -443,7 +463,17 @@ app.registerExtension({
         // Load images on startup - delay to allow widget values to load from saved workflows
         setTimeout(() => {
             // loadImages() will automatically get fresh path from getCurrentPath()
-            loadImages();
+            loadImages().then(() => {
+                // Restore selected image state if we have one
+                if (state.selectedImageName && currentImageList.includes(state.selectedImageName)) {
+                    showSelectedImage(state.selectedImageName);
+                    // Set grid visibility based on persisted state
+                    if (!state.isGridExpanded) {
+                        imageGrid.style.display = "none";
+                        selectedImageDisplay.style.display = "flex";
+                    }
+                }
+            });
         }, 100);
 
         // Monitor for size changes
