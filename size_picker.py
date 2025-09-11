@@ -30,6 +30,7 @@ class SizePicker:
                     "1408x1408 (1:1 Flux Ultra)",
                     "1440x1440 (1:1 Flux Ultra)",
                     "1920x1920 (1:1 Ultra High-End)",
+                    "2048x2048 (1:1 Seedream)",
                     
                     # 16:9 Landscape (YouTube standard)
                     "1536x864 (16:9 Flux)",
@@ -55,24 +56,31 @@ class SizePicker:
                     "1104x1472 (3:4 Qwen)",
                     "1056x1408 (3:4 Flux)",
                     "1200x1600 (3:4 Ultra)",
+                    "1728x2304 (3:4 Seedream)",
                     
                     # 4:3 Landscape
                     "1152x864 (4:3 Flux)",
                     "1472x1140 (4:3 Qwen)",
                     "1280x960 (4:3 Flux)",
                     "1408x1056 (4:3 Flux)",
+                    "2304x1728 (4:3 Seedream)",
                     
                     # 3:2 Landscape  
                     "1536x1024 (3:2 Flux)",
                     "1584x1056 (3:2 Qwen)",
                     "1344x896 (3:2 Flux)",
                     "1216x800 (3:2 Flux)",
+                    "2496x1664 (3:2 Seedream)",
                     
                     # 2:3 Portrait
                     "1024x1536 (2:3 Flux)",
                     "1056x1584 (2:3 Qwen)",
                     "896x1344 (2:3 Flux)",
                     "800x1216 (2:3 Flux)",
+                    "1664x2496 (2:3 Seedream)",
+                    
+                    # 1:3 Portrait (Ultra Tall)
+                    "1296x4096 (1:3 Seedream)",
                     
                     # 2:1 Landscape
                     "1024x512 (2:1 Flux)",
@@ -85,6 +93,7 @@ class SizePicker:
                     "1344x576 (21:9 Flux)",
                     "2016x864 (21:9 Flux)",
                     "2688x1152 (21:9 Ultra)",
+                    "3024x1296 (21:9 Seedream)",
                     
                     # 1.91:1 Social/Link cards
                     "1216x640 (1.91:1 Flux)",
