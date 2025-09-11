@@ -256,14 +256,24 @@ app.registerExtension({
             // Update current image list and persist
             currentImageList = imageNames;
             state.currentImageList = imageNames;
+            console.log('Updated image list:', imageNames.length, 'images');
             
-            // Update the image widget value (now a string input, not dropdown)
+            // Only restore widget value if it was explicitly selected before
+            // DO NOT auto-select first image
             if (imageWidget) {
-                // Set default value to first image if available
-                if (imageNames.length > 0 && !selectedImageName) {
-                    imageWidget.value = imageNames[0];
+                const currentWidgetValue = imageWidget.value || "";
+                if (currentWidgetValue && imageNames.includes(currentWidgetValue)) {
+                    // Keep existing selection if it's valid
+                    selectedImageName = currentWidgetValue;
+                    console.log('✅ Keeping existing selection:', currentWidgetValue);
                 } else if (imageNames.length === 0) {
+                    // Clear widget if no images available
                     imageWidget.value = "";
+                    selectedImageName = "";
+                } else if (!currentWidgetValue) {
+                    // Leave widget empty if nothing was selected before
+                    console.log('🆆 No previous selection, leaving widget empty');
+                    selectedImageName = "";
                 }
             }
             
@@ -285,6 +295,12 @@ app.registerExtension({
                     
                     // Select this item
                     thumbnail.classList.add('selected');
+                    
+                    // IMMEDIATELY update the widget value for persistence
+                    if (imageWidget) {
+                        imageWidget.value = selectedFilename;
+                        console.log('🔄 Updated widget value to:', selectedFilename);
+                    }
                     
                     // Show the selected image on the node
                     showSelectedImage(selectedFilename);
@@ -448,30 +464,59 @@ app.registerExtension({
                 // Show grid when node is scaled tall enough AND user wants grid visible
                 if (availableHeight > 100 && isGridExpanded) {
                     imageGrid.style.display = "grid";
+                } else if (availableHeight > 100 && !isGridExpanded && selectedImageName) {
+                    // Show selected image if we have one and grid is not expanded
+                    selectedImageDisplay.style.display = "flex";
+                    imageGrid.style.display = "none";
                 } else {
                     imageGrid.style.display = "none";
+                    selectedImageDisplay.style.display = "none";
                 }
             } else {
                 container.style.height = "50px";
                 imageGrid.style.display = "none";
+                selectedImageDisplay.style.display = "none";
             }
         };
 
         container.style.width = "100%";
         updateContainerHeight();
 
+        // Use the image widget value as source of truth (it persists automatically)
+        const currentImageValue = imageWidget?.value || "";
+        console.log('🔧 Node initialization - Image widget value:', currentImageValue);
+        
+        // ALWAYS start with grid view - let user choose
+        selectedImageName = currentImageValue;
+        isGridExpanded = true;
+        console.log('📋 Starting with grid view');
+        
         // Load images on startup - delay to allow widget values to load from saved workflows
         setTimeout(() => {
             // loadImages() will automatically get fresh path from getCurrentPath()
             loadImages().then(() => {
                 // Restore selected image state if we have one
-                if (state.selectedImageName && currentImageList.includes(state.selectedImageName)) {
-                    showSelectedImage(state.selectedImageName);
-                    // Set grid visibility based on persisted state
-                    if (!state.isGridExpanded) {
+                // Only restore to selected image view if user explicitly selected something
+                const widgetImageValue = imageWidget?.value || "";
+                if (widgetImageValue && widgetImageValue.trim() && currentImageList.includes(widgetImageValue)) {
+                    console.log('✅ User had selected:', widgetImageValue, '- restoring selected image view');
+                    
+                    // Show the selected image immediately
+                    showSelectedImage(widgetImageValue);
+                    
+                    // Switch to selected image view after a brief delay
+                    setTimeout(() => {
+                        isGridExpanded = false;
                         imageGrid.style.display = "none";
                         selectedImageDisplay.style.display = "flex";
-                    }
+                        console.log('🖼️ Showing selected image view');
+                    }, 100);
+                } else {
+                    console.log('📋 No explicit selection found - staying in grid view');
+                    isGridExpanded = true;
+                    // Make sure grid is visible
+                    imageGrid.style.display = "grid";
+                    selectedImageDisplay.style.display = "none";
                 }
             });
         }, 100);
