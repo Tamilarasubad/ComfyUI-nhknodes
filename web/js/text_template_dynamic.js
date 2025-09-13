@@ -16,13 +16,38 @@ const _TYPE = "STRING";
 
 app.registerExtension({
     name: "nhknodes.text_template_dynamic",
-    async beforeRegisterNodeDef(nodeType, nodeData, appRef) {
+    async beforeRegisterNodeDef(nodeType, nodeData) {
         if (!nodeData || nodeData.name !== _ID) return;
+
+        // Manage text inputs - ensures proper sequential naming
+        nodeType.prototype._manageTextInputs = function() {
+            const allInputs = this.inputs || [];
+            const textInputs = allInputs.filter(inp => inp && inp.type === _TYPE && inp.name.startsWith(_PREFIX));
+            
+            // Count connected inputs
+            const connectedCount = textInputs.filter(inp => inp.link !== null).length;
+            
+            // Remove all empty inputs first
+            for (let i = allInputs.length - 1; i >= 0; i--) {
+                const inp = allInputs[i];
+                if (inp && inp.type === _TYPE && inp.name.startsWith(_PREFIX) && inp.link === null) {
+                    this.removeInput(i);
+                }
+            }
+            
+            // Add next sequential input (starts at text_2, never text_1)
+            const nextNum = connectedCount + 2;
+            this.addInput(`text_${nextNum}`, _TYPE);
+            const last = this.inputs[this.inputs.length - 1];
+            if (last) last.color_off = "#666";
+            
+            this?.graph?.setDirtyCanvas(true);
+        };
 
         const onNodeCreated = nodeType.prototype.onNodeCreated;
         nodeType.prototype.onNodeCreated = function () {
             const me = onNodeCreated?.apply(this);
-            // Add initial text inputs
+            // Start with text_1 on node creation
             const hasTextInput = (this.inputs || []).some((i) => i && i.type === _TYPE && i.name.startsWith(_PREFIX));
             if (!hasTextInput) {
                 this.addInput("text_1", _TYPE);
@@ -47,16 +72,10 @@ app.registerExtension({
                     if (slot) slot.color_off = "#666";
                 }
                 
-                // Always keep one empty input at the end
-                let last = this.inputs[this.inputs.length - 1];
-                if (last === undefined || last.type !== _TYPE || !last.name.startsWith(_PREFIX) || last.link !== null) {
-                    const nextIndex = (this.inputs || []).filter((i) => i && i.type === _TYPE && i.name.startsWith(_PREFIX)).length + 1;
-                    this.addInput(`text_${nextIndex}`, _TYPE);
-                    last = this.inputs[this.inputs.length - 1];
-                    if (last) last.color_off = "#666";
-                }
+                // Clean up after configuration
+                setTimeout(() => this._manageTextInputs(), 10);
             } catch (e) {
-                // no-op
+                // Ignore configuration errors
             }
             return me;
         };
@@ -66,6 +85,7 @@ app.registerExtension({
             const me = onConnectionsChange?.apply(this, arguments);
 
             if (slotType === TypeSlot.Input && node_slot && node_slot.name.startsWith(_PREFIX)) {
+                // Handle connection type updates
                 if (link_info && event === TypeSlotEvent.Connect) {
                     const fromNode = this.graph._nodes.find((other) => other.id == link_info.origin_id);
                     if (fromNode) {
@@ -74,33 +94,10 @@ app.registerExtension({
                             node_slot.type = parent_link.type;
                         }
                     }
-                } else if (event === TypeSlotEvent.Disconnect) {
-                    try { this.removeInput(slot_idx); } catch (e) {}
                 }
 
-                // Remove all empty TEXT inputs (from disconnects or node deletions)
-                for (let i = this.inputs.length - 1; i >= 0; i--) {
-                    const inp = this.inputs[i];
-                    if (!inp || inp.type !== _TYPE || !inp.name.startsWith(_PREFIX)) continue;
-                    if (inp.link == null) this.removeInput(i);
-                }
-
-                // Rename remaining connected TEXT inputs to text_1, text_2, etc.
-                let count = 0;
-                for (let i = 0; i < this.inputs.length; i++) {
-                    const inp = this.inputs[i];
-                    if (!inp || inp.type !== _TYPE || !inp.name.startsWith(_PREFIX)) continue;
-                    count += 1;
-                    inp.name = `text_${count}`;
-                }
-
-                // Keep a single empty TEXT input at the end
-                const nextIndex = count + 1;
-                this.addInput(`text_${nextIndex}`, _TYPE);
-                const last = this.inputs[this.inputs.length - 1];
-                if (last) last.color_off = "#666";
-
-                this?.graph?.setDirtyCanvas(true);
+                // Update inputs after connection change
+                setTimeout(() => this._manageTextInputs(), 100);
                 return me;
             }
 
