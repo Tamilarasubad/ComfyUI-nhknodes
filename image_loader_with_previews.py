@@ -17,7 +17,7 @@ async def get_nhk_images(request):
     body = await request.json()
     folder_path = body.get("folder_path", folder_paths.get_output_directory())
     sort_method = body.get("sort_method", "name_asc")
-    
+
     if not os.path.exists(folder_path) or not os.path.isdir(folder_path):
         return web.json_response({})
 
@@ -34,9 +34,9 @@ async def get_nhk_images(request):
     elif sort_method == "name_desc":
         files.sort(key=lambda x: os.path.basename(x).lower(), reverse=True)
     elif sort_method == "newest_first":
-        files.sort(key=lambda x: os.path.getctime(x), reverse=True)
+        files.sort(key=lambda x: os.path.getmtime(x), reverse=True)
     elif sort_method == "oldest_first":
-        files.sort(key=lambda x: os.path.getctime(x))
+        files.sort(key=lambda x: os.path.getmtime(x))
     elif sort_method == "recently_modified":
         files.sort(key=lambda x: os.path.getmtime(x), reverse=True)
     elif sort_method == "oldest_modified":
