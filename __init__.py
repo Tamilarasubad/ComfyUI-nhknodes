@@ -48,6 +48,7 @@ load_node_file("openai_api.py")
 load_node_file("interval_gate.py")
 load_node_file("visual_resizer.py")
 load_node_file("load_image_series.py")
+load_node_file("play_sound.py")
 
 print(f"NHK Nodes: Loaded {len(NODE_CLASS_MAPPINGS)} nodes: {list(NODE_CLASS_MAPPINGS.keys())}")
 
